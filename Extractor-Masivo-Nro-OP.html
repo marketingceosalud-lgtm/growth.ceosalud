@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CEO Salud · Registro masivo de operaciones</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  :root{
+    --teal-deep:#1c6f6a;
+    --teal:#2a9d96;
+    --teal-light:#63c2bb;
+    --teal-pale:#e7f5f4;
+    --ink:#123c39;
+    --white:#ffffff;
+    --danger:#c0503f;
+    --warn:#b98900;
+    --ok:#3f9b52;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:linear-gradient(160deg,var(--teal-pale) 0%, #f5faf9 55%, #ffffff 100%);
+    color:var(--ink);
+    min-height:100vh;
+  }
+
+  header{
+    width:100%;
+    background:linear-gradient(120deg, var(--teal-deep), var(--teal) 60%, var(--teal-light));
+    padding:22px 24px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    box-shadow:0 4px 18px rgba(18,60,57,0.18);
+  }
+  header img{ height:42px; }
+  .logo-respaldo{
+    display:flex; align-items:center; gap:8px;
+    color:var(--white); font-weight:800; font-size:1.15rem; letter-spacing:.5px;
+  }
+  .logo-respaldo .cruz{
+    display:flex; align-items:center; justify-content:center;
+    width:30px; height:30px; background:rgba(255,255,255,.18); border-radius:8px; font-size:1.1rem;
+  }
+  header .titulo{
+    color:var(--white); font-size:1.05rem; font-weight:600; letter-spacing:.2px;
+    border-left:1px solid rgba(255,255,255,.35); padding-left:16px;
+  }
+  header .titulo small{ display:block; font-weight:400; font-size:.78rem; opacity:.85; }
+
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:32px 20px 60px;
+  }
+
+  .card{
+    background:var(--white);
+    border-radius:18px;
+    padding:26px;
+    box-shadow:0 10px 30px rgba(18,60,57,0.08);
+    border:1px solid #e3efee;
+    margin-bottom:22px;
+  }
+
+  .drop{
+    border:2px dashed var(--teal-light);
+    border-radius:14px;
+    padding:34px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:background .18s ease, border-color .18s ease;
+    background:var(--teal-pale);
+  }
+  .drop.dragover{ background:#dcf1ef; border-color:var(--teal); }
+  .drop .principal{ font-weight:600; color:var(--teal-deep); margin:4px 0; }
+  .drop .secundario{ font-size:.85rem; color:#5c7a78; margin:4px 0; }
+  input[type=file]{ display:none; }
+
+  .barra-progreso{
+    margin-top:16px;
+    display:none;
+  }
+  .barra-progreso.visible{ display:block; }
+  .barra-progreso .texto{ font-size:.85rem; color:#5c7a78; margin-bottom:6px; }
+  .barra-fondo{
+    height:8px; background:var(--teal-pale); border-radius:6px; overflow:hidden;
+  }
+  .barra-relleno{
+    height:100%; background:var(--teal); width:0%; transition:width .2s ease;
+  }
+
+  .acciones{
+    display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;
+  }
+  .btn{
+    display:flex; align-items:center; gap:7px;
+    border:none; border-radius:9px; padding:11px 16px;
+    font-size:.88rem; font-weight:600; cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primario{ background:var(--teal); color:var(--white); }
+  .btn-primario:hover{ background:var(--teal-deep); }
+  .btn-secundario{ background:var(--teal-pale); color:var(--teal-deep); border:1px solid var(--teal-light); }
+  .btn-secundario:hover{ background:#dcf1ef; }
+  .btn.copiado{ background:var(--ok) !important; color:var(--white) !important; }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.9rem;
+  }
+  thead th{
+    text-align:left;
+    background:var(--teal-pale);
+    color:var(--teal-deep);
+    padding:10px 12px;
+    font-size:.76rem;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    position:sticky; top:0;
+  }
+  tbody td{
+    padding:10px 12px;
+    border-bottom:1px solid #eef5f4;
+    vertical-align:top;
+  }
+  tbody tr:hover{ background:#f8fcfb; }
+  td.numero{ font-family:'Consolas','SFMono-Regular',monospace; font-weight:700; }
+  td.archivo{ max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#5c7a78; font-size:.8rem; }
+  .miniatura{ width:34px; height:34px; object-fit:cover; border-radius:6px; border:1px solid #e3efee; vertical-align:middle; margin-right:8px; }
+
+  .estado-badge{
+    display:inline-block; padding:2px 9px; border-radius:20px; font-size:.72rem; font-weight:700;
+  }
+  .estado-ok{ background:#e5f4e8; color:var(--ok); }
+  .estado-espera{ background:#f1f1f1; color:#888; }
+  .estado-error{ background:#fbeae7; color:var(--danger); }
+  .estado-revisar{ background:#fdf3d9; color:var(--warn); }
+
+  .tabla-wrap{
+    max-height:520px;
+    overflow:auto;
+    border-radius:10px;
+    border:1px solid #eef5f4;
+    margin-top:18px;
+  }
+  .vacio{
+    text-align:center; color:#9db4b2; padding:30px 0; font-size:.88rem;
+  }
+
+  footer{ text-align:center; color:#7a9997; font-size:.78rem; padding-bottom:10px; }
+</style>
+</head>
+<body>
+
+  <header>
+    <img src="https://ceosalud.pe/wp-content/uploads/2026/01/LOGO-CEO-SALUD_BLANCO-scaled.png"
+         alt="CEO Salud"
+         onerror="this.style.display='none'; document.getElementById('logoRespaldo').style.display='flex';">
+    <div id="logoRespaldo" class="logo-respaldo" style="display:none"><span class="cruz">✚</span>CEO SALUD</div>
+    <div class="titulo">
+      Registro masivo de operaciones
+      <small>Contabilidad · Uso interno CEO Salud</small>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="drop" id="dropZone">
+        <p class="principal">Arrastra aquí todas las capturas de pago</p>
+        <p class="secundario">o haz clic para elegir varios archivos a la vez</p>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+      </div>
+
+      <div class="barra-progreso" id="barraProgreso">
+        <div class="texto" id="textoProgreso">Procesando 0 de 0</div>
+        <div class="barra-fondo"><div class="barra-relleno" id="barraRelleno"></div></div>
+      </div>
+
+      <div class="acciones">
+        <button class="btn btn-primario" id="btnCopiarTabla" disabled>Copiar tabla (pegar en Excel)</button>
+        <button class="btn btn-secundario" id="btnDescargarCSV" disabled>Descargar CSV</button>
+        <button class="btn btn-secundario" id="btnLimpiar" disabled>Limpiar todo</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tabla-wrap">
+        <table id="tabla">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Archivo</th>
+              <th>Fecha</th>
+              <th>Banco / App</th>
+              <th>Monto</th>
+              <th>N° Operación</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="cuerpoTabla"></tbody>
+        </table>
+        <div class="vacio" id="vacioMensaje">Aún no has subido ninguna captura.</div>
+      </div>
+    </div>
+
+    <footer>CEO Salud · Confianza y Bienestar</footer>
+  </main>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const cuerpoTabla = document.getElementById('cuerpoTabla');
+  const vacioMensaje = document.getElementById('vacioMensaje');
+  const barraProgreso = document.getElementById('barraProgreso');
+  const textoProgreso = document.getElementById('textoProgreso');
+  const barraRelleno = document.getElementById('barraRelleno');
+  const btnCopiarTabla = document.getElementById('btnCopiarTabla');
+  const btnDescargarCSV = document.getElementById('btnDescargarCSV');
+  const btnLimpiar = document.getElementById('btnLimpiar');
+
+  let filas = []; // { archivo, miniatura, fecha, banco, monto, operacion, estado }
+
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) procesarLote(Array.from(e.dataTransfer.files));
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length) procesarLote(Array.from(fileInput.files));
+  });
+
+  // ---------- Extracción de campos ----------
+
+  function pareceFechaUOtroRuido(token) {
+    return /^\d{1,2}[\/\-]\d{1,2}/.test(token) ||
+           /^\d{1,2}:\d{2}/.test(token) ||
+           (/^\d{4}$/.test(token) && Number(token) > 1900 && Number(token) < 2100);
+  }
+
+  function extraerNumeroOperacion(flat) {
+    const etiquetaRegex = /\b(?:n(?:úmero|ro|°)\.?\s*(?:de\s*)?)(operaci[oó]n|transferencia)\s*[:\-]?\s*/gi;
+    const candidatos = [];
+    let m;
+    while ((m = etiquetaRegex.exec(flat)) !== null) {
+      const tipoEtiqueta = m[1].toLowerCase().startsWith('operaci') ? 0 : 1;
+      const resto = flat.slice(m.index + m[0].length, m.index + m[0].length + 40);
+      const tokenMatch = resto.match(/^([A-Z0-9]{4,20})(?:\s+([A-Z0-9]{2,10}))?/i);
+      if (!tokenMatch) continue;
+      if (pareceFechaUOtroRuido(tokenMatch[1])) continue;
+      // Solo unimos el segundo pedazo si trae al menos un dígito: así evitamos pegar
+      // palabras sueltas como "MENSAJE", "COMISIÓN", etc. que a veces siguen en la línea de abajo.
+      const segundoPedazo = (tokenMatch[2] && /\d/.test(tokenMatch[2])) ? tokenMatch[2] : '';
+      candidatos.push({ prioridad: tipoEtiqueta, valor: (tokenMatch[1] + segundoPedazo).toUpperCase() });
+    }
+    if (candidatos.length > 0) {
+      candidatos.sort((a, b) => a.prioridad - b.prioridad);
+      return candidatos[0].valor;
+    }
+    const regexesRespaldo = [
+      /\d{3}\.\d{3}\.\d{3}\.\d{4}/,
+      /\b\d{6,15}\b/,
+      /\b[A-Z0-9]{6,20}\b/
+    ];
+    for (const r of regexesRespaldo) {
+      const mm = flat.match(r);
+      if (mm) return mm[0];
+    }
+    return null;
+  }
+
+  const MESES = {
+    ene:'01', enero:'01', feb:'02', febrero:'02', mar:'03', marzo:'03', abr:'04', abril:'04',
+    may:'05', mayo:'05', jun:'06', junio:'06', jul:'07', julio:'07', ago:'08', agosto:'08',
+    sep:'09', sept:'09', septiembre:'09', oct:'10', octubre:'10', nov:'11', noviembre:'11',
+    dic:'12', diciembre:'12'
+  };
+
+  function extraerFecha(flat) {
+    // dd/mm/yyyy o dd-mm-yyyy
+    let m = flat.match(/\b(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})\b/);
+    if (m) {
+      const dd = m[1].padStart(2,'0'), mm = m[2].padStart(2,'0');
+      let yy = m[3]; if (yy.length === 2) yy = '20' + yy;
+      return `${dd}/${mm}/${yy}`;
+    }
+    // "21 jul. 2026" / "20 julio 2026"
+    m = flat.match(/\b(\d{1,2})\s+de\s+([a-záéíóú]+)\.?\s+de\s+(\d{4})\b/i) ||
+        flat.match(/\b(\d{1,2})\s+([a-záéíóú]+)\.?\s+(\d{4})\b/i);
+    if (m) {
+      const mesNombre = m[2].toLowerCase().replace('.', '');
+      const mesNum = MESES[mesNombre];
+      if (mesNum) return `${m[1].padStart(2,'0')}/${mesNum}/${m[3]}`;
+    }
+    return null;
+  }
+
+  const ENTIDADES = [
+    'Yape', 'Plin', 'Banco de la Nación', 'BCP', 'Banco de Crédito', 'Interbank',
+    'BBVA', 'Scotiabank', 'Banco Pichincha', 'Banco Falabella', 'MiBanco',
+    'Banco Ripley', 'Caja Arequipa', 'Caja Piura', 'Caja Huancayo', 'Banbif'
+  ];
+
+  function extraerBanco(flat) {
+    for (const nombre of ENTIDADES) {
+      const re = new RegExp('\\b' + nombre.replace(/\s+/g,'\\s+') + '\\b', 'i');
+      if (re.test(flat)) return nombre === 'Banco de Crédito' ? 'BCP' : nombre;
+    }
+    return null;
+  }
+
+  function extraerMonto(flat) {
+    const m = flat.match(/S\/\.?\s?(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)/i);
+    return m ? 'S/ ' + m[1] : null;
+  }
+
+  function extraerCampos(rawText) {
+    const flat = rawText.replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' ').trim();
+    return {
+      fecha: extraerFecha(flat),
+      banco: extraerBanco(flat),
+      monto: extraerMonto(flat),
+      operacion: extraerNumeroOperacion(flat)
+    };
+  }
+
+  // ---------- Render de tabla ----------
+
+  function badgeEstado(estado) {
+    if (estado === 'ok') return '<span class="estado-badge estado-ok">Listo</span>';
+    if (estado === 'error') return '<span class="estado-badge estado-error">Error</span>';
+    if (estado === 'revisar') return '<span class="estado-badge estado-revisar">Revisar</span>';
+    return '<span class="estado-badge estado-espera">Procesando…</span>';
+  }
+
+  function renderTabla() {
+    if (filas.length === 0) {
+      cuerpoTabla.innerHTML = '';
+      vacioMensaje.style.display = 'block';
+      btnCopiarTabla.disabled = true;
+      btnDescargarCSV.disabled = true;
+      btnLimpiar.disabled = true;
+      return;
+    }
+    vacioMensaje.style.display = 'none';
+    btnCopiarTabla.disabled = false;
+    btnDescargarCSV.disabled = false;
+    btnLimpiar.disabled = false;
+
+    cuerpoTabla.innerHTML = filas.map((f, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td class="archivo" title="${f.archivo}"><img class="miniatura" src="${f.miniatura}">${f.archivo}</td>
+        <td>${f.fecha || '—'}</td>
+        <td>${f.banco || '—'}</td>
+        <td>${f.monto || '—'}</td>
+        <td class="numero">${f.operacion || '—'}</td>
+        <td>${badgeEstado(f.estado)}</td>
+      </tr>
+    `).join('');
+  }
+
+  // ---------- Procesamiento por lote ----------
+
+  async function procesarLote(archivos) {
+    barraProgreso.classList.add('visible');
+    let procesados = 0;
+    const total = archivos.length;
+    textoProgreso.textContent = `Procesando 0 de ${total}`;
+    barraRelleno.style.width = '0%';
+
+    for (const file of archivos) {
+      const fila = {
+        archivo: file.name,
+        miniatura: URL.createObjectURL(file),
+        fecha: null, banco: null, monto: null, operacion: null,
+        estado: 'espera'
+      };
+      filas.push(fila);
+      renderTabla();
+
+      try {
+        const { data: { text } } = await Tesseract.recognize(file, 'spa');
+        const campos = extraerCampos(text);
+        fila.fecha = campos.fecha;
+        fila.banco = campos.banco;
+        fila.monto = campos.monto;
+        fila.operacion = campos.operacion;
+        fila.estado = campos.operacion ? 'ok' : 'revisar';
+      } catch (err) {
+        console.error('Error OCR en', file.name, err);
+        fila.estado = 'error';
+      }
+
+      procesados++;
+      textoProgreso.textContent = `Procesando ${procesados} de ${total}`;
+      barraRelleno.style.width = Math.round((procesados / total) * 100) + '%';
+      renderTabla();
+    }
+
+    textoProgreso.textContent = `Listo: ${procesados} de ${total} procesadas`;
+  }
+
+  // ---------- Copiar / exportar ----------
+
+  function filasATSV() {
+    const encabezado = ['Archivo', 'Fecha', 'Banco / App', 'Monto', 'N° Operación', 'Estado'];
+    const lineas = [encabezado.join('\t')];
+    for (const f of filas) {
+      lineas.push([
+        f.archivo,
+        f.fecha || '',
+        f.banco || '',
+        f.monto || '',
+        f.operacion || '',
+        f.estado === 'ok' ? 'Listo' : f.estado === 'error' ? 'Error' : f.estado === 'revisar' ? 'Revisar' : 'Procesando'
+      ].join('\t'));
+    }
+    return lineas.join('\n');
+  }
+
+  btnCopiarTabla.addEventListener('click', async () => {
+    const tsv = filasATSV();
+    try {
+      await navigator.clipboard.writeText(tsv);
+    } catch (e) {
+      const area = document.createElement('textarea');
+      area.value = tsv;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand('copy');
+      document.body.removeChild(area);
+    }
+    const original = btnCopiarTabla.textContent;
+    btnCopiarTabla.classList.add('copiado');
+    btnCopiarTabla.textContent = 'Copiado ✓ — pégalo en Excel';
+    setTimeout(() => {
+      btnCopiarTabla.classList.remove('copiado');
+      btnCopiarTabla.textContent = original;
+    }, 2000);
+  });
+
+  btnDescargarCSV.addEventListener('click', () => {
+    const encabezado = ['Archivo', 'Fecha', 'Banco / App', 'Monto', 'N° Operación', 'Estado'];
+    const filasCSV = filas.map(f => [
+      f.archivo, f.fecha || '', f.banco || '', f.monto || '', f.operacion || '',
+      f.estado === 'ok' ? 'Listo' : f.estado === 'error' ? 'Error' : f.estado === 'revisar' ? 'Revisar' : 'Procesando'
+    ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+    const csv = '\uFEFF' + [encabezado.join(','), ...filasCSV].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fecha = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `registro_operaciones_${fecha}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  btnLimpiar.addEventListener('click', () => {
+    filas = [];
+    renderTabla();
+    barraProgreso.classList.remove('visible');
+    fileInput.value = '';
+  });
+</script>
+</body>
+</html>
