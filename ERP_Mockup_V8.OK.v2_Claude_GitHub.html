@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="referrer" content="no-referrer-when-downgrade">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CEO Medic — ERP Clínico Integral</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --t:#00A896;--tl:#E6F7F5;--td:#006A60;--tm:#38C4B4;
+  --navy:#152D3E;--navy-card:#1D3B50;--navy-dark:#0C1C28;
+  --accent:#F97316;--accent-light:#FFF4ED;--accent-dark:#C2410C;
+  --g:#10B981;--gl:#ECFDF5;--gd:#047857;
+  --r:#EF4444;--rl:#FEF2F2;--rd:#B91C1C;
+  --indigo:#6366F1;--indl:#EEF2FF;
+  --wh:#FFFFFF;--bg:#F4F8FA;--rule:#E2E8F0;--rule2:#EDF2F7;
+  --ink:#0F172A;--im:#334155;--il:#64748B;--ph:#94A3B8;
+  --sb:260px;--r8:10px;--r12:14px;
+  --sh-sm:0 2px 5px rgba(15,23,42,.04);
+  --sh-md:0 6px 20px rgba(15,23,42,.07);
+  --sh-lg:0 16px 40px rgba(15,23,42,.12);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);height:100vh;display:flex;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* SIDEBAR */
+.sb{width:var(--sb);background:var(--navy);display:flex;flex-direction:column;height:100vh;flex-shrink:0;z-index:30;color:#fff}
+.sb-logo-wrap{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08);background:var(--navy-dark);display:flex;align-items:center;justify-content:center}
+.sb-logo-img{max-width:180px;height:38px;object-fit:contain}
+.nav{padding:12px;flex:1;overflow-y:auto}
+.nav::-webkit-scrollbar{display:none}
+.nsec{font-size:9px;font-weight:800;letter-spacing:.12em;color:rgba(255,255,255,.35);padding:14px 10px 6px;text-transform:uppercase}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:12.5px;color:rgba(255,255,255,.75);cursor:pointer;border-radius:var(--r8);margin-bottom:2px;font-weight:600;transition:all .15s}
+.ni:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(3px)}
+.ni.on{background:linear-gradient(135deg,var(--t),var(--td));color:#fff;box-shadow:0 4px 14px rgba(0,168,150,.35)}
+.ni-ic{font-size:15px;width:18px;text-align:center}
+.nbadge{margin-left:auto;background:rgba(255,255,255,.18);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:12px}
+.nbadge.urgent{background:var(--r);color:#fff}
+.sb-ft{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08);background:var(--navy-dark);display:flex;align-items:center;gap:10px}
+.sb-av{width:34px;height:34px;border-radius:10px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--rule);height:56px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tb-title{font-size:16px;font-weight:800;color:var(--navy)}
+.tb-bc{font-size:11.5px;color:var(--il)}
+.content{flex:1;overflow-y:auto;padding:20px 24px;display:none}
+.content.active{display:block}
+.content::-webkit-scrollbar{width:6px}
+.content::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px}
+
+/* BOTONES */
+.btn{height:34px;border-radius:var(--r8);padding:0 14px;font-size:12px;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;font-family:inherit}
+.btn-p{background:linear-gradient(135deg,var(--t),var(--td));color:#fff}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,168,150,.3)}
+.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff}
+.btn-g{background:#fff;border:1px solid var(--rule);color:var(--im)}
+.btn-g:hover{background:var(--bg);border-color:var(--t);color:var(--td)}
+.btn-sm{height:28px;padding:0 10px;font-size:11.5px}
+.btn-xs{height:24px;padding:0 8px;font-size:11px}
+
+input,select,textarea{width:100%;height:34px;border:1.5px solid var(--rule);border-radius:var(--r8);padding:0 10px;font-size:12px;color:var(--ink);background:#fff;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--t);box-shadow:0 0 0 3px rgba(0,168,150,.12)}
+textarea{height:60px;padding:8px 10px;resize:vertical}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:11px;font-weight:700;color:var(--im)}
+.fl .r{color:var(--r)}
+.fr{display:grid;gap:10px;margin-bottom:10px}
+.fr.c2{grid-template-columns:1fr 1fr}
+.fr.c3{grid-template-columns:1fr 1fr 1fr}
+.fr.c4{grid-template-columns:repeat(4,1fr)}
+.sec-lbl{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--il);margin:12px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--rule2)}
+
+.card{background:#fff;border-radius:var(--r12);border:1px solid var(--rule);box-shadow:var(--sh-sm);overflow:hidden}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--rule2);display:flex;align-items:center;justify-content:space-between}
+.card-tt{font-size:13.5px;font-weight:800;color:var(--navy)}
+.card-sub{font-size:11px;color:var(--il)}
+.card-bd{padding:16px 18px}
+
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:10px 14px;font-size:10px;font-weight:800;color:var(--il);background:#F8FAFC;border-bottom:1px solid var(--rule);text-transform:uppercase}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--rule2);color:var(--ink);vertical-align:middle}
+.tbl tr:hover td{background:#F9FBFC}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-g{background:var(--gl);color:var(--gd)}.badge-r{background:var(--rl);color:var(--rd)}.badge-o{background:var(--accent-light);color:var(--accent-dark)}.badge-t{background:var(--tl);color:var(--td)}.badge-gray{background:#F1F5F9;color:var(--il)}
+
+/* CALENDARIO DRAG & DROP */
+.cal-toolbar{padding:12px 18px;background:#fff;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.cal-views{display:flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.cvb{padding:5px 12px;font-size:11px;font-weight:700;color:var(--il);cursor:pointer;background:#fff;border:none}
+.cvb.on{background:var(--t);color:#fff}
+.cal-head{display:grid;background:#F8FAFC;border-bottom:1px solid var(--rule)}
+.cal-row{display:grid}
+.cdh{padding:8px 4px;font-size:11px;font-weight:700;color:var(--il);text-align:center}
+.cdh.today{color:var(--t)}
+.ctc{padding:0 6px;font-size:9.5px;color:var(--ph);display:flex;align-items:center;justify-content:flex-end;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.cc{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:3px;min-height:52px;position:relative;background:#fff;transition:background .1s}
+.cc.drag-over{background:var(--tl)!important;outline:2px dashed var(--t)}
+.cc.copado{background:#FFF5F5!important;border-left:3px solid var(--r)}
+.cc.copado::before{content:'🔴 Copado';position:absolute;top:2px;right:4px;font-size:8px;font-weight:800;color:var(--rd);background:var(--rl);padding:1px 5px;border-radius:4px;z-index:2}
+
+.ev{border-radius:6px;padding:3px 6px;font-size:10px;font-weight:700;line-height:1.25;cursor:grab;margin-bottom:2px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:3px solid;user-select:none}
+.ev:active{cursor:grabbing}
+.ev.trauma{background:var(--tl);border-color:var(--t);color:var(--td)}
+.ev.pd{background:var(--accent-light);border-color:var(--accent);color:var(--accent-dark)}
+.ev.mfr{background:var(--gl);border-color:var(--g);color:var(--gd)}
+
+/* VISOR MULTIMEDIA */
+.media-viewport{background:#0b1319;border-radius:8px;height:320px;display:flex;align-items:center;justify-content:center;color:#fff;position:relative;overflow:hidden;border:1px solid #1a2a35}
+.media-tools{position:absolute;top:10px;right:10px;display:flex;gap:6px;background:rgba(0,0,0,.65);padding:4px 8px;border-radius:6px;z-index:2}
+
+/* CRM */
+.crm-tabs-row{display:flex;align-items:stretch;border-bottom:2px solid var(--rule);padding:0 4px;overflow-x:auto}
+.crm-tab-btn{display:flex;align-items:center;gap:7px;padding:12px 16px;border:none;background:none;font-size:12px;font-weight:600;color:var(--il);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.crm-tab-btn.on{color:var(--t);border-bottom-color:var(--t);font-weight:700}
+.chat-bubble{max-width:78%;padding:9px 13px;border-radius:14px;font-size:12px;margin-bottom:8px;line-height:1.4}
+.chat-in{background:#fff;border:1px solid var(--rule);align-self:flex-start}
+.chat-out{background:var(--t);color:#fff;align-self:flex-end}
+
+/* MODALES */
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(3px);z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex}
+.modal{background:#fff;border-radius:var(--r12);width:640px;max-width:100%;max-height:94vh;overflow-y:auto;box-shadow:0 16px 40px rgba(0,0,0,.2)}
+.modal.wide{width:880px}.modal.narrow{width:460px}
+.mh{padding:16px 20px;border-bottom:1px solid var(--rule2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:5}
+.mt{font-size:15px;font-weight:800;color:var(--navy)}
+.mb{padding:18px 20px}
+.mf{padding:12px 20px;border-top:1px solid var(--rule2);background:#F8FAFC;display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;z-index:5}
+.mc{background:none;border:none;font-size:20px;color:var(--il);cursor:pointer}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--navy);color:#fff;padding:10px 18px;border-radius:10px;font-size:12px;font-weight:600;opacity:0;transform:translateY(40px);transition:all .2s;z-index:200}
+.toast.show{opacity:1;transform:translateY(0)}
+.receipt-print{font-family:'Courier New',Courier,monospace;background:#fff;border:1px dashed #cbd5e1;padding:24px;border-radius:8px;max-width:440px;margin:0 auto;color:#0f172a;box-shadow:var(--sh-sm)}
+</style>
+
+<!-- Firebase SDKs compat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBXNHv7jbXO2-920XJ10010D-7c7pKGIIs",
+    authDomain: "ceo-medic-erp.firebaseapp.com",
+    projectId: "ceo-medic-erp",
+    storageBucket: "ceo-medic-erp.firebasestorage.app",
+    messagingSenderId: "590244631462",
+    appId: "1:590244631462:web:a5724f2260ebb6cb8b7567"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+</script>
+</head>
+<body>
+
+<!-- PANTALLA DE LOGIN CON CONTINGENCIA DIRECTA -->
+<div id="login-screen" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0E1F2D 0%,#152D3E 50%,#00A896 200%);display:flex;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:390px;box-shadow:0 32px 80px rgba(0,0,0,.35)">
+    <div style="text-align:center;margin-bottom:24px">
+      <img src="https://ceosalud.pe/wp-content/uploads/2026/01/ceosalud.pe_pequeno-01.png" style="height:56px;width:auto;margin:0 auto 8px;display:block" onerror="this.style.display='none'">
+      <div style="font-size:18px;font-weight:900;color:#152D3E">CEO <span style="color:#00A896">SALUD</span></div>
+      <div style="font-size:11px;color:#64748B;margin-top:2px">Sistema de gestión clínica · CEO Medic</div>
+    </div>
+
+    <div id="login-error" style="display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:10px 12px;font-size:11.5px;color:#B91C1C;margin-bottom:14px;text-align:left;line-height:1.4"></div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#334155;display:block;margin-bottom:4px">Correo institucional</label>
+        <input type="email" id="login-email" value="gustavo@ceosalud.pe" placeholder="usuario@ceosalud.pe" style="height:38px" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:#334155;display:block;margin-bottom:4px">Contraseña</label>
+        <input type="password" id="login-pass" value="123456" placeholder="••••••••" style="height:38px" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button id="login-btn" type="button" onclick="doLogin()" class="btn btn-p" style="height:42px;justify-content:center;margin-top:4px">
+        Ingresar al sistema
+      </button>
+    </div>
+
+    <div style="text-align:center;margin-top:18px;font-size:10.5px;color:#94A3B8">
+      CEO Salud · Magdalena del Mar, Lima<br>
+      <span style="color:#CBD5E1">Acceso con firma y credenciales NTS 139-MINSA</span>
+    </div>
+  </div>
+</div>
+
+<!-- ERP PRINCIPAL -->
+<div id="erp-app" style="display:none;height:100vh;width:100%">
+  <div style="display:flex;height:100vh;width:100%">
+    <!-- SIDEBAR -->
+    <div class="sb">
+      <div class="sb-logo-wrap">
+        <img src="https://ceosalud.pe/wp-content/uploads/2026/01/LOGO-CEO-SALUD_BLANCO-scaled.png" alt="CEO Salud" class="sb-logo-img">
+      </div>
+      <nav class="nav">
+        <div class="nsec">Capa Clínica</div>
+        <div class="ni" id="ni-cit" onclick="showV('cit')"><span class="ni-ic">📅</span>Citas</div>
+        <div class="ni" id="ni-pac" onclick="showV('pac')"><span class="ni-ic">👥</span>Pacientes</div>
+        <div class="ni" id="ni-horarios" onclick="showV('horarios')"><span class="ni-ic">🕐</span>Horarios</div>
+        <div class="ni on" id="ni-admit" onclick="showV('admit')"><span class="ni-ic">🏥</span>Admisión<span class="nbadge urgent" id="nb-admit-cnt">4</span></div>
+        <div class="ni" id="ni-consulta" onclick="showV('consulta')"><span class="ni-ic">🩺</span>Historia Clínica</div>
+        <div class="nsec">Capa Comercial & Finanzas</div>
+        <div class="ni" id="ni-ventas" onclick="showV('ventas')"><span class="ni-ic">🧾</span>Ventas</div>
+        <div class="ni" id="ni-caja" onclick="showV('caja')"><span class="ni-ic">💰</span>Caja</div>
+        <div class="ni" id="ni-crm" onclick="showV('crm')"><span class="ni-ic">🎯</span>CRM<span class="nbadge urgent" id="nb-fuga">3</span></div>
+        <div class="nsec">Operación & Control</div>
+        <div class="ni" id="ni-llamador" onclick="showV('llamador')"><span class="ni-ic">📺</span>Llamador Sala<span class="nbadge" id="nb-llamador-cnt">2</span></div>
+        <div class="ni" id="ni-audit" onclick="showV('audit')"><span class="ni-ic">🔍</span>Audit Log</div>
+      </nav>
+      <div class="sb-ft">
+        <div class="sb-av" id="user-badge-av">DQ</div>
+        <div>
+          <div style="font-size:12px;font-weight:700" id="user-badge-name">Dr. Julio Quiroz</div>
+          <div style="font-size:10px;opacity:.65">Médico Tratante / Socio</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="tb-title" id="tb-ttl">Admisión</div>
+          <div class="tb-bc" id="tb-bc">Control de llegada y cobro rápido de todos los pacientes del día</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span style="font-size:11px;font-weight:700;color:var(--il)">Sesión Activa:</span>
+          <select id="user-session-sim" onchange="cambiarSesionUsuario(this.value)" style="width:190px;height:30px;font-weight:700">
+            <option value="Dr. Quiroz">Dr. Julio Quiroz (Trauma)</option>
+            <option value="Dra. Loarte">Dra. Keylin Loarte (Pie Diabético)</option>
+            <option value="Dra. Jimena">Dra. Jimena Díaz (MFR)</option>
+          </select>
+          <button class="btn btn-g btn-sm" onclick="doLogout()">Salir</button>
+        </div>
+      </div>
+
+      <!-- VISTA ADMISIÓN -->
+      <div class="content active" id="v-admit">
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <div class="card-tt">Pacientes Citados Hoy (Todas las Especialidades)</div>
+              <div class="card-sub">Buscador unificado para check-in rápido y derivación a cobro directo en recepción</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="admit-search-inp" placeholder="Buscar por DNI, Nombres o N° de Historia..." style="width:300px;height:32px" oninput="filtrarAdmisionDia(this.value)">
+              <button class="btn btn-g btn-sm" onclick="document.getElementById('admit-search-inp').value='';filtrarAdmisionDia('')">Limpiar</button>
+              <button class="btn btn-accent btn-sm" onclick="openModalNuevoPaciente()">+ Agregar Paciente / Pagador</button>
+            </div>
+          </div>
+          <table class="tbl">
+            <thead>
+              <tr><th>Hora</th><th>N° HC</th><th>Paciente</th><th>DNI</th><th>Especialidad / Médico</th><th>Servicio</th><th>Estado Pago</th><th>Acción</th></tr>
+            </thead>
+            <tbody id="admit-dia-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA CITAS -->
+      <div class="content" id="v-cit">
+        <div class="card">
+          <div class="cal-toolbar">
+            <div style="display:flex;align-items:center;gap:8px">
+              <button class="btn btn-g btn-xs" onclick="navCal(-1)">◀</button>
+              <button class="btn btn-g btn-xs" onclick="goToday()">Hoy</button>
+              <button class="btn btn-g btn-xs" onclick="navCal(1)">▶</button>
+              <span style="font-size:13.5px;font-weight:800;color:var(--navy);margin-left:8px" id="cal-period-lbl">Semana Actual</span>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <div style="font-size:11px;color:var(--il)">💡 <em>Arrastra citas en Semana o Mes para reprogramar · Clic para ver u editar detalles</em></div>
+              <div class="cal-views">
+                <button class="cvb" id="cvb-dia" onclick="setCalView('dia')">Día</button>
+                <button class="cvb on" id="cvb-semana" onclick="setCalView('semana')">Semana</button>
+                <button class="cvb" id="cvb-mes" onclick="setCalView('mes')">Mes</button>
+              </div>
+              <div id="subview-dia-toggle" style="display:none;border:1px solid var(--rule);border-radius:6px;overflow:hidden">
+                <button class="cvb on" id="cvb-dia-grid" onclick="setDiaSubView('grid')" style="font-size:10.5px">Bloques</button>
+                <button class="cvb" id="cvb-dia-list" onclick="setDiaSubView('list')" style="font-size:10.5px">Lista Detallada</button>
+              </div>
+              <button class="btn btn-accent btn-sm" onclick="openModalNuevaCita()">+ Agendar Cita</button>
+            </div>
+          </div>
+          <div id="cal-render-container" style="overflow-x:auto"></div>
+        </div>
+      </div>
+
+      <!-- VISTA PACIENTES -->
+      <div class="content" id="v-pac">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div>
+            <div style="font-size:15px;font-weight:800">Pacientes</div>
+            <div style="font-size:11px;color:var(--il)">Historias pre-asignadas en reserva y confirmadas formalmente en primera atención médica (NTS 139-MINSA)</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input type="text" placeholder="Buscar por DNI o Nombre..." style="width:240px" oninput="filterPacientes(this.value)">
+            <button class="btn btn-p" onclick="openModalNuevoPaciente()">+ Nuevo Paciente</button>
+          </div>
+        </div>
+        <div class="card">
+          <table class="tbl">
+            <thead>
+              <tr><th>N° Historia</th><th>Estado HC</th><th>Paciente</th><th>Documento</th><th>Celular Principal</th><th>Celular Alt.</th><th>Atribución Comercial</th><th>Acción</th></tr>
+            </thead>
+            <tbody id="tb-pacientes"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA HORARIOS MÉDICOS -->
+      <div class="content" id="v-horarios">
+        <div style="display:grid;grid-template-columns:250px 1fr 280px;gap:16px">
+          <div class="card">
+            <div class="card-hd"><div class="card-tt">Profesionales Médicos</div></div>
+            <div style="padding:8px" id="horarios-medicos-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <div class="card-tt" id="horarios-cal-titulo">Disponibilidad Dr. Quiroz</div>
+                <div class="card-sub">Clic en un día para editar horario personalizado o bloquear atención</div>
+              </div>
+              <div style="display:flex;gap:4px">
+                <button class="btn btn-g btn-xs" onclick="navMesHorarios(-1)">◀</button>
+                <button class="btn btn-g btn-xs" onclick="navMesHorarios(1)">▶</button>
+              </div>
+            </div>
+            <div style="padding:14px">
+              <div id="horario-grid-mes" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px"></div>
+            </div>
+          </div>
+          <div class="card" id="horario-editor-panel">
+            <div class="card-hd"><div class="card-tt">Horario Base Semanal</div></div>
+            <div class="card-bd">
+              <div class="fl" style="margin-bottom:6px">Días de Atención Fijos</div>
+              <div style="display:flex;gap:4px;margin-bottom:12px" id="base-dias-btns"></div>
+              <div class="fr c2">
+                <div class="fg"><div class="fl">Hora Inicio</div><input type="time" id="base-inicio" value="09:00"></div>
+                <div class="fg"><div class="fl">Hora Fin</div><input type="time" id="base-fin" value="13:00"></div>
+              </div>
+              <div class="fg" style="margin-bottom:12px"><div class="fl">Duración por Turno (min)</div><input type="number" id="base-dur" value="20"></div>
+              <button class="btn btn-p btn-sm" style="width:100%" onclick="guardarHorarioBase()">Aplicar Horario Base</button>
+
+              <div id="dia-excepcion-box" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--rule);display:none">
+                <div style="font-weight:800;font-size:12px;color:var(--navy);margin-bottom:8px" id="exc-dia-lbl">Modificar Día</div>
+                <div class="fg" style="margin-bottom:8px">
+                  <div class="fl">Estado del Día</div>
+                  <select id="exc-tipo" onchange="toggleInputsExcepcion(this.value)">
+                    <option value="estandar">Horario Estándar</option>
+                    <option value="personalizado">Horario Especial / Extendido</option>
+                    <option value="bloqueado">Sin Atención (Bloqueado / Cirugía)</option>
+                  </select>
+                </div>
+                <div id="exc-horas-wrap" class="fr c2">
+                  <div class="fg"><div class="fl">Inicio</div><input type="time" id="exc-inicio" value="08:00"></div>
+                  <div class="fg"><div class="fl">Fin</div><input type="time" id="exc-fin" value="14:00"></div>
+                </div>
+                <div class="fg" style="margin-bottom:8px"><div class="fl">Motivo / Nota</div><input type="text" id="exc-nota" placeholder="Ej: Cirugía programada o turno extra"></div>
+                <div style="display:flex;gap:6px">
+                  <button class="btn btn-g btn-xs" onclick="cerrarExcepcion()">Cancelar</button>
+                  <button class="btn btn-accent btn-xs" style="flex:1" onclick="guardarExcepcionDia()">Guardar Día</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA CONSULTA MÉDICA (HISTORIA CLÍNICA) -->
+      <div class="content" id="v-consulta">
+        <div style="display:grid;grid-template-columns:320px 1fr;gap:16px">
+          <div class="card">
+            <div class="card-hd"><div class="card-tt">Búsqueda & Pacientes</div></div>
+            <div style="padding:10px 12px;border-bottom:1px solid var(--rule2);background:#F8FAFC">
+              <div class="fl" style="margin-bottom:4px">Buscar Paciente No Citado</div>
+              <div style="display:flex;gap:4px">
+                <input type="text" id="hce-search-dni" placeholder="DNI del paciente..." style="height:28px">
+                <button class="btn btn-g btn-xs" onclick="buscarPacienteNoCitadoHCE()">Buscar</button>
+              </div>
+              <div style="font-size:9.5px;color:var(--il);margin-top:4px">Solo accesible si el paciente pertenece a su historial médico.</div>
+            </div>
+            <div style="padding:8px" id="consulta-pacientes-list"></div>
+          </div>
+
+          <div class="card" id="hce-panel-container">
+            <div class="card-hd" style="border-bottom:none;padding-bottom:0">
+              <div>
+                <div class="card-tt" id="hce-pac-titulo">Seleccione un paciente para abrir su Historia Clínica</div>
+                <div class="card-sub" id="hce-pac-sub">Control normativo de acceso NTS 139-MINSA</div>
+              </div>
+              <div id="hce-bloqueo-aviso" style="display:none">
+                <span class="badge badge-r">🔒 Acceso Restringido: Paciente sin relación médica con usted</span>
+              </div>
+            </div>
+
+            <div id="hce-cuerpo" style="padding:16px 18px;display:none">
+              <div style="display:flex;border-bottom:2px solid var(--rule);gap:16px;margin-bottom:14px">
+                <button class="btn btn-g btn-xs on" id="hce-tab-atenc" onclick="setHceTab('atenc')">🩺 Acto Médico & Pronunciamiento</button>
+                <button class="btn btn-g btn-xs" id="hce-tab-multimedia" onclick="setHceTab('multimedia')">📁 Visor Multimedia & Subir Archivos</button>
+                <button class="btn btn-g btn-xs" id="hce-tab-ordenes" onclick="setHceTab('ordenes')">📋 Cronología de Órdenes Médicas</button>
+              </div>
+
+              <!-- Acto Médico -->
+              <div id="hce-sub-atenc">
+                <div class="fr c2">
+                  <div class="fg"><div class="fl">Médico Tratante Responsable</div><input id="hce-med-nombre" readonly style="background:#F8FAFC;font-weight:700"></div>
+                  <div class="fg"><div class="fl">Diagnóstico Principal (CIE-10)</div><input id="hce-cie10" value="M54.5 Lumbago no especificado"></div>
+                </div>
+                <div class="fg" style="margin-bottom:10px">
+                  <div class="fl">Anamnesis & Examen Clínico</div>
+                  <textarea style="height:70px">Paciente acude refiriendo dolor lumbar persistente con irradiación hacia miembro inferior derecho. Rango de movilidad limitado.</textarea>
+                </div>
+                <div class="fg" style="margin-bottom:12px">
+                  <div class="fl">Pronunciamiento / Plan de Tratamiento Médico</div>
+                  <textarea style="height:60px" id="hce-plan-txt">Se prescribe paquete de 12 sesiones de Fisioterapia y control radiológico lumbosacro.</textarea>
+                </div>
+                <div style="background:var(--tl);border:1px solid var(--t);border-radius:8px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-weight:800;color:var(--td);font-size:12px">🔒 FIRMA DIGITAL MÉDICA CON CERTIFICADO DIGITAL</div>
+                    <div style="font-size:10.5px;color:var(--im);margin-top:2px">Validez Jurídica Ley N° 27269 / Registro NTS 139-MINSA. El registro quedará inmutable.</div>
+                  </div>
+                  <button class="btn btn-p btn-sm" onclick="firmarDigitalmenteHCE()">✍️ Suscribir & Firmar Digitalmente</button>
+                </div>
+              </div>
+
+              <!-- Visor Multimedia & Subida -->
+              <div id="hce-sub-multimedia" style="display:none">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                  <div style="display:flex;gap:6px">
+                    <button class="btn btn-g btn-xs on" onclick="cargarMedioLocal('rx')">Radiografías (RX)</button>
+                    <button class="btn btn-g btn-xs" onclick="cargarMedioLocal('eco')">Ecografías</button>
+                    <button class="btn btn-g btn-xs" onclick="cargarMedioLocal('pdf')">Informes en PDF</button>
+                  </div>
+                  <label class="btn btn-accent btn-xs" style="cursor:pointer">
+                    📤 Subir Archivo a Historia
+                    <input type="file" style="display:none" onchange="subirArchivoLocal(event)">
+                  </label>
+                </div>
+                <div class="media-viewport" id="visor-local-display">
+                  <div class="media-tools">
+                    <button class="btn btn-g btn-xs" onclick="showToast('Zoom +')">🔍+</button>
+                    <button class="btn btn-g btn-xs" onclick="showToast('Invertir contraste')">◐</button>
+                    <button class="btn btn-g btn-xs" onclick="showToast('Descargando archivo local...')">💾</button>
+                  </div>
+                  <div id="media-inner-content" style="text-align:center"></div>
+                </div>
+                <div style="font-size:10.5px;color:var(--il);margin-top:6px">Almacenamiento Local Seguro: <code>//192.168.1.50/pacientes_data/magdalena/</code></div>
+              </div>
+
+              <!-- Cronología Órdenes -->
+              <div id="hce-sub-ordenes" style="display:none">
+                <table class="tbl">
+                  <thead><tr><th>Fecha y Hora</th><th>Tipo de Orden</th><th>Detalle de la Prescripción</th><th>Estado Facturación</th><th>Acción</th></tr></thead>
+                  <tbody id="hce-ordenes-cronologia-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA VENTAS -->
+      <div class="content" id="v-ventas">
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-hd">
+              <div><div class="card-tt">Emisión de Comprobantes Electrónicos</div><div class="card-sub">Asignación automática de almacén, profesional y multicanal de pago</div></div>
+            </div>
+            <div class="card-bd">
+              <div class="fr c3">
+                <div class="fg">
+                  <div class="fl">Tipo de Comprobante <span class="r">*</span></div>
+                  <select id="vta-tipo-comp" onchange="evaluarDetraccionYCampos()">
+                    <option value="Boleta">Boleta</option>
+                    <option value="Factura">Factura</option>
+                    <option value="Recibo">Recibo</option>
+                    <option value="Nota de crédito">Nota de crédito</option>
+                    <option value="Nota de débito">Nota de débito</option>
+                  </select>
+                </div>
+                <div class="fg" id="wrap-detraccion" style="display:none">
+                  <div class="fl">SUNAT Detracciones</div>
+                  <label style="display:flex;align-items:center;gap:6px;height:34px;font-size:11.5px;font-weight:700;color:var(--accent)">
+                    <input type="checkbox" id="chk-detraccion" style="width:auto;height:auto" onchange="calcularTotalesVenta()"> APLICAR DETRACCIÓN (10% - 12%)
+                  </label>
+                </div>
+                <div class="fg">
+                  <div class="fl">N° Serie / Folio</div>
+                  <input type="text" id="vta-folio" value="B001-000145" readonly style="background:#F8FAFC;font-weight:700">
+                </div>
+              </div>
+
+              <!-- Pagador vs Atendido -->
+              <div style="background:var(--tl);border:1px solid var(--tm);border-radius:8px;padding:10px 12px;margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                  <span style="font-size:11px;font-weight:800;color:var(--td)">DATOS DEL PACIENTE ATENDIDO</span>
+                  <label style="font-size:11px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:5px;cursor:pointer">
+                    <input type="checkbox" id="chk-tercero-paga" onchange="togglePagadorTercero(this.checked)" style="width:auto;height:auto"> ¿El comprobante se emite a otra persona / Razón Social?
+                  </label>
+                </div>
+                <div class="fr c2" style="margin-bottom:0">
+                  <div class="fg">
+                    <input type="text" id="vta-pac-dni" placeholder="DNI del Paciente atendido..." oninput="buscarPacienteEnVenta(this.value)">
+                    <div id="vta-pac-nom-lbl" style="font-size:11px;font-weight:700;color:var(--td);margin-top:2px"></div>
+                  </div>
+                  <div class="fg"><input type="text" id="vta-pac-hc" placeholder="Historia Clínica" readonly style="background:#fff"></div>
+                </div>
+
+                <div id="box-pagador-tercero" style="display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--tm)">
+                  <span style="font-size:10.5px;font-weight:800;color:var(--accent-dark);display:block;margin-bottom:6px">DATOS FISCALES DEL PAGADOR (QUIEN PAGA)</span>
+                  <div class="fr c2" style="margin-bottom:0">
+                    <div class="fg"><input type="text" id="vta-pag-doc" placeholder="RUC o DNI del Pagador"></div>
+                    <div class="fg"><input type="text" id="vta-pag-razon" placeholder="Razón Social o Nombre Completo del Pagador"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Almacén Automático & Profesional Asistencial -->
+              <div class="fr c2">
+                <div class="fg">
+                  <div class="fl">Ítem / Producto / Servicio <span class="r">*</span></div>
+                  <select id="vta-item-sel" onchange="manejarSeleccionCatalogo(this.value)">
+                    <option value="">+ Seleccionar ítem del catálogo...</option>
+                    <option value="s1">Reevaluación Dr. Quiroz (S/ 120)</option>
+                    <option value="s2">Reevaluación referido Dr. Quiroz (S/ 220)</option>
+                    <option value="s3">Reevaluación CEO Traumatología (S/ 80)</option>
+                    <option value="s4">Reevaluación CEO Pie Diabético (S/ 120)</option>
+                    <option value="s5">Sesión Medicina Física MFR (S/ 100)</option>
+                    <option value="s6">Paquete Terapia Física 12 Sesiones (S/ 650)</option>
+                    <option value="p1">Ácido Hialurónico 2ml (S/ 380)</option>
+                    <option value="p2">Gasa Estéril Pack (S/ 12)</option>
+                  </select>
+                </div>
+                <div class="fg">
+                  <div class="fl">Almacén Asignado (Automático)</div>
+                  <input type="text" id="vta-almacen" readonly style="background:#F8FAFC;font-weight:700;color:var(--navy)">
+                </div>
+              </div>
+
+              <div class="fg" id="wrap-profesional" style="display:none;margin-bottom:10px">
+                <div class="fl">Profesional Asistencial Asignado <span class="r">*</span></div>
+                <select id="vta-prof-asist">
+                  <option value="Dr. Julio Quiroz">Dr. Julio Quiroz (Traumatólogo Principal)</option>
+                  <option value="Dra. Keylin Loarte">Dra. Keylin Loarte (Especialista Pie Diabético)</option>
+                  <option value="Dra. Jimena Díaz">Dra. Jimena Díaz (Med. Física & Rehabilitación)</option>
+                  <option value="Lic. Terapia Física">Lic. Terapia Física (Asistencial Magdalena)</option>
+                </select>
+              </div>
+
+              <button class="btn btn-g btn-sm" style="margin-bottom:12px" onclick="agregarItemALaVenta()">+ Agregar al Comprobante</button>
+
+              <table class="tbl" style="margin-bottom:12px;border:1px solid var(--rule)">
+                <thead><tr><th>Descripción</th><th>Almacén</th><th>Profesional</th><th>P. Unit</th><th>Total</th><th></th></tr></thead>
+                <tbody id="vta-tabla-items"><tr><td colspan="6" style="text-align:center;color:var(--ph);padding:14px">Sin ítems seleccionados</td></tr></tbody>
+              </table>
+
+              <!-- Descuentos con Clave -->
+              <div style="padding:10px 12px;background:#F8FAFC;border:1px solid var(--rule);border-radius:8px;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="font-size:11px;font-weight:800;color:var(--navy)">DESCUENTO COMERCIAL:</span>
+                  <label><input type="radio" name="rd-desc" value="pct" checked onchange="cambiarTipoDescuento()"> Porcentaje (%)</label>
+                  <label><input type="radio" name="rd-desc" value="imp" onchange="cambiarTipoDescuento()"> Importe Fijo (S/)</label>
+                  <input type="number" id="vta-desc-val" value="0" style="width:80px;height:28px" oninput="evaluarClaveDescuento()">
+                  <input type="password" id="vta-desc-pass" placeholder="Clave aprobación" style="width:130px;height:28px;display:none">
+                </div>
+                <div id="vta-desc-msg" style="font-size:10px;color:var(--r);margin-top:4px"></div>
+              </div>
+
+              <!-- Múltiples Medios de Pago y N° de Operación -->
+              <div class="sec-lbl">MEDIOS DE PAGO (SELECCIÓN MÚLTIPLE CON N° DE OPERACIÓN)</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px" id="medios-pago-checkboxes"></div>
+              <div id="medios-pago-inputs-dinamicos" style="display:grid;gap:8px;margin-bottom:12px"></div>
+
+              <!-- Observaciones Comprobante / Desglosable -->
+              <div class="fr c2">
+                <div class="fg">
+                  <div class="fl">Observación en Comprobante</div>
+                  <textarea id="vta-obs-comp" placeholder="Texto que aparecerá impreso en la boleta/factura..."></textarea>
+                </div>
+                <div class="fg">
+                  <div class="fl">Observación en Desglosable / Anexo Adjunto</div>
+                  <textarea id="vta-obs-desglosable" placeholder="Indicaciones internas, garantía o desglose de sesiones..."></textarea>
+                </div>
+              </div>
+
+              <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--rule);padding-top:12px">
+                <div>
+                  <div style="font-size:12px;color:var(--il)">Subtotal: <span id="lbl-vta-subtotal">S/ 0.00</span> | Desc: <span id="lbl-vta-desc">S/ 0.00</span></div>
+                  <div id="lbl-detraccion-row" style="font-size:11px;font-weight:700;color:var(--accent);display:none">Detracción SUNAT (12%): <span id="lbl-vta-detraccion">S/ 0.00</span></div>
+                  <div style="font-size:18px;font-weight:900;color:var(--navy)">Neto a Pagar: <strong style="color:var(--t)" id="lbl-vta-total">S/ 0.00</strong></div>
+                </div>
+                <button class="btn btn-p" onclick="emitirComprobanteVenta()">✓ Emitir Comprobante</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><div class="card-tt">Comprobantes Emitidos (Clic para Imprimir)</div></div>
+            <div id="vta-historial-list" style="padding:10px;font-size:11.5px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA CAJA -->
+      <div class="content" id="v-caja">
+        <div class="fr c4" style="margin-bottom:16px">
+          <div class="card" style="padding:14px"><div class="fl">Apertura de Turno</div><div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:4px">S/ 300.00</div><div style="font-size:10px;color:var(--il)">Caja 01 · Lessly Contreras</div></div>
+          <div class="card" style="padding:14px"><div class="fl">Efectivo Físico</div><div style="font-size:22px;font-weight:900;color:var(--navy);margin-top:4px" id="caja-efectivo">S/ 720.00</div><div style="font-size:10px;color:var(--il)">En gaveta</div></div>
+          <div class="card" style="padding:14px"><div class="fl">Digital (Yape / POS)</div><div style="font-size:22px;font-weight:900;color:var(--t);margin-top:4px">S/ 1,480.00</div><div style="font-size:10px;color:var(--il)">Conciliado en cuenta</div></div>
+          <div class="card" style="padding:14px"><div class="fl">Balance Total</div><div style="font-size:22px;font-weight:900;color:var(--gd);margin-top:4px">S/ 2,200.00</div><div style="font-size:10px;color:var(--gd)">Arqueo conforme</div></div>
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-tt">Movimientos de Caja & Cierre Individual</div><div class="card-sub">Control de arqueo por cajero y turno</div></div>
+            <button class="btn btn-accent btn-sm" onclick="cerrarCaja()">🔒 Ejecutar Cierre de Turno</button>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Hora</th><th>Operación</th><th>Concepto / Paciente</th><th>Medio</th><th>Entrada</th><th>Salida</th><th>Cajero Responsable</th></tr></thead>
+            <tbody id="caja-movimientos-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA CRM -->
+      <div class="content" id="v-crm">
+        <div class="card" style="margin-bottom:14px">
+          <div class="crm-tabs-row">
+            <button class="crm-tab-btn on" id="ctab-wsp" onclick="cambiarPestanaCRM('wsp')">💬 WhatsApp</button>
+            <button class="crm-tab-btn" id="ctab-seg" onclick="cambiarPestanaCRM('seg')">🔍 Seguimiento HCE <span class="badge badge-r" style="margin-left:4px" id="crm-badge-fuga">3</span></button>
+            <button class="crm-tab-btn" id="ctab-email" onclick="cambiarPestanaCRM('email')">✉️ E-Mail Marketing</button>
+            <button class="crm-tab-btn" id="ctab-pub" onclick="cambiarPestanaCRM('pub')">📅 Publicaciones</button>
+            <button class="crm-tab-btn" id="ctab-ads" onclick="cambiarPestanaCRM('ads')">📱 Anuncios</button>
+            <button class="crm-tab-btn" id="ctab-auto" onclick="cambiarPestanaCRM('auto')">⚡ Automatizaciones</button>
+            <button class="crm-tab-btn" id="ctab-rep" onclick="cambiarPestanaCRM('rep')">📊 Reportería (Embudo)</button>
+          </div>
+        </div>
+
+        <!-- Pestaña WhatsApp -->
+        <div id="crm-pan-wsp" class="crm-panel-content" style="display:grid;grid-template-columns:300px 1fr 280px;gap:14px;height:calc(100vh - 200px)">
+          <div class="card" style="display:flex;flex-direction:column">
+            <div style="padding:10px;border-bottom:1px solid var(--rule2)"><input type="text" placeholder="Buscar chat por paciente..." style="height:30px"></div>
+            <div id="crm-wsp-contactos" style="flex:1;overflow-y:auto"></div>
+          </div>
+          <div class="card" style="display:flex;flex-direction:column">
+            <div class="card-hd" style="padding:10px 16px">
+              <div><div class="card-tt" id="crm-chat-title">Seleccione un chat</div><div class="card-sub" id="crm-chat-status">Desconectado</div></div>
+              <button class="btn btn-g btn-xs" onclick="insertarPlantillaRapida()">📋 Plantilla Rápida</button>
+            </div>
+            <div id="crm-chat-history" style="flex:1;overflow-y:auto;padding:16px;background:#F8FAFC;display:flex;flex-direction:column"></div>
+            <div style="padding:10px;border-top:1px solid var(--rule2);display:flex;gap:8px">
+              <input type="text" id="crm-chat-inp" placeholder="Escribe un mensaje de WhatsApp..." onkeydown="if(event.key==='Enter')enviarRespuestaCRM()">
+              <button class="btn btn-p" onclick="enviarRespuestaCRM()">Enviar</button>
+            </div>
+          </div>
+          <div class="card" id="crm-lead-profile" style="padding:16px">
+            <div style="text-align:center;color:var(--ph);padding-top:40px">Selecciona un chat para ver la ficha del paciente.</div>
+          </div>
+        </div>
+
+        <!-- Pestaña E-Mail Marketing -->
+        <div id="crm-pan-email" class="crm-panel-content" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="card">
+              <div class="card-hd"><div class="card-tt">Campañas de Correo Activas</div><button class="btn btn-p btn-xs">+ Nueva Campaña</button></div>
+              <div class="card-bd">
+                <div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:10px">
+                  <div style="font-weight:800;color:var(--navy)">1. Recordatorio Control Post-Consulta (7 días)</div>
+                  <div style="font-size:11px;color:var(--il);margin-top:2px">Automatizado · Tasa de apertura 58% · Convertidos: 24 pacientes</div>
+                </div>
+                <div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:10px">
+                  <div style="font-weight:800;color:var(--navy)">2. Reactivación Pacientes Pie Diabético (90 días)</div>
+                  <div style="font-size:11px;color:var(--il);margin-top:2px">Automatizado · Tasa de apertura 41% · Convertidos: 11 pacientes</div>
+                </div>
+                <div style="padding:10px;background:var(--bg);border-radius:8px">
+                  <div style="font-weight:800;color:var(--navy)">3. Renovación Paquetes Terapia Física 12 Sesiones</div>
+                  <div style="font-size:11px;color:var(--il);margin-top:2px">Segmento: Pacientes en sesión 10 u 11 · Apertura 64%</div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-hd"><div class="card-tt">Redactor de Campaña Rápida</div><button class="btn btn-accent btn-xs" onclick="showToast('Campaña enviada')">Enviar a Segmento</button></div>
+              <div class="card-bd">
+                <div class="fg" style="margin-bottom:10px"><div class="fl">Asunto</div><input value="Tu salud articular nos importa - Control en CEO Salud"></div>
+                <div class="fg" style="margin-bottom:10px"><div class="fl">Segmento Destino</div><select><option>Pacientes atendidos últimos 30 días sin reevaluación</option><option>Diabéticos sin control de HbA1c en 6 meses</option></select></div>
+                <div class="fg"><div class="fl">Cuerpo del Mensaje</div><textarea style="height:100px">Hola {{nombre}}, el Dr. Quiroz y el equipo de CEO Salud esperamos que sigas mejorando con tus ejercicios indicados...</textarea></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pestaña Seguimiento (Órdenes HCE) -->
+        <div id="crm-pan-seg" class="crm-panel-content" style="display:none">
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <div class="card-tt">Detección de Órdenes Pendientes sin Facturar (Fuga Comercial HCE)</div>
+                <div class="card-sub">Órdenes emitidas por el médico en Historia Clínica que no cuentan con comprobante en Ventas/Caja</div>
+              </div>
+              <span class="badge badge-r" style="font-size:11px">Recuperables con seguimiento activo</span>
+            </div>
+            <table class="tbl">
+              <thead>
+                <tr><th>N° Historia</th><th>Paciente</th><th>Médico Prescriptor</th><th>Orden Prescrita en HCE</th><th>Fecha Emisión</th><th>Estado en Facturación</th><th>Acción de Recuperación</th></tr>
+              </thead>
+              <tbody id="crm-ordenes-fuga-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pestaña Publicaciones -->
+        <div id="crm-pan-pub" class="crm-panel-content" style="display:none">
+          <div class="card">
+            <div class="card-hd">
+              <div><div class="card-tt">Planificador de Publicaciones en Redes</div><div class="card-sub">Facebook, Instagram, TikTok & Google Business CEO Salud</div></div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Fecha / Hora</th><th>Canal</th><th>Título / Copy</th><th>Formato</th><th>Especialidad Foco</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td>12/09 · 10:00</td><td><span class="badge badge-t">Instagram / FB</span></td><td>¿Dolor de rodilla al correr? 3 señales de meniscopatía</td><td>Reels / Video</td><td>Traumatología</td><td><span class="badge badge-g">Programado</span></td></tr>
+                <tr><td>14/09 · 16:30</td><td><span class="badge badge-o">TikTok</span></td><td>Cómo cuidar tus pies si tienes diabetes: Rutina diaria</td><td>Video Corto</td><td>Pie Diabético</td><td><span class="badge badge-g">Programado</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pestaña Anuncios -->
+        <div id="crm-pan-ads" class="crm-panel-content" style="display:none">
+          <div class="card">
+            <div class="card-hd">
+              <div><div class="card-tt">Administrador de Anuncios Meta Ads</div><div class="card-sub">Tráfico calificado hacia WhatsApp y sede Magdalena</div></div>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Campaña</th><th>Canal</th><th>Presupuesto / Día</th><th>Leads Recibidos</th><th>Costo por Lead (CPL)</th><th>Conversión a Cita</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Trauma - Meniscos & Rodilla</strong></td><td>Meta Ads (FB/IG)</td><td>S/ 45.00</td><td>142 leads</td><td>S/ 4.80</td><td><strong>38 citas</strong></td><td><span class="badge badge-g">Activa</span></td></tr>
+                <tr><td><strong>Pie Diabético - Curación Avanzada</strong></td><td>Meta Ads (FB/IG)</td><td>S/ 35.00</td><td>86 leads</td><td>S/ 6.20</td><td><strong>29 citas</strong></td><td><span class="badge badge-g">Activa</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pestaña Automatizaciones -->
+        <div id="crm-pan-auto" class="crm-panel-content" style="display:none">
+          <div class="card">
+            <div class="card-hd"><div class="card-tt">Flujos de Automatización Activos</div></div>
+            <table class="tbl">
+              <thead><tr><th>Nombre de la Automatización</th><th>Disparador (Trigger)</th><th>Acción Inmediata</th><th>Ejecuciones Mes</th><th>Estado</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Confirmación Instantánea Cita</strong></td><td>Cita agendada en ERP</td><td>Envía confirmación con ubicación Magdalena por WhatsApp</td><td>428 envíos</td><td><span class="badge badge-g">Activo</span></td></tr>
+                <tr><td><strong>Recordatorio 24 horas antes</strong></td><td>Cita a 24 horas</td><td>Envía recordatorio de asistencia con botón interactivo</td><td>380 envíos</td><td><span class="badge badge-g">Activo</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Pestaña Reportería -->
+        <div id="crm-pan-rep" class="crm-panel-content" style="display:none">
+          <div class="card">
+            <div class="card-hd"><div class="card-tt">Embudo Comercial de Marketing (Mes Actual)</div></div>
+            <div class="card-bd">
+              <div style="margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:4px"><span>1. Leads Captados</span><span>1,020 leads (100%)</span></div>
+                <div style="height:10px;background:var(--rule);border-radius:5px;overflow:hidden"><div style="width:100%;height:100%;background:var(--navy)"></div></div>
+              </div>
+              <div style="margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:4px"><span>2. Citas Agendadas en Sistema</span><span>340 citas (33.3%)</span></div>
+                <div style="height:10px;background:var(--rule);border-radius:5px;overflow:hidden"><div style="width:33.3%;height:100%;background:var(--t)"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:4px"><span>3. Pacientes Atendidos en Magdalena</span><span>295 pacientes (28.9%)</span></div>
+                <div style="height:10px;background:var(--rule);border-radius:5px;overflow:hidden"><div style="width:28.9%;height:100%;background:var(--g)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA LLAMADOR DE SALA -->
+      <div class="content" id="v-llamador">
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px">
+          <div class="card">
+            <div class="card-hd">
+              <div><div class="card-tt">Cola de Pacientes en Espera / Recepción</div><div class="card-sub">Llamado interactivo a consultorio en tiempo real</div></div>
+              <button class="btn btn-accent btn-sm" onclick="llamarSiguienteEnLlamador()">📢 Llamar Siguiente</button>
+            </div>
+            <table class="tbl">
+              <thead><tr><th>Hora</th><th>Paciente</th><th>Médico</th><th>Servicio</th><th>Estado</th><th>Acción</th></tr></thead>
+              <tbody id="llamador-tabla-body"></tbody>
+            </table>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:var(--navy);border-radius:14px;padding:24px;text-align:center;color:#fff">
+              <div style="font-size:11px;font-weight:800;color:var(--tm);letter-spacing:.12em;margin-bottom:8px">LLAMANDO A CONSULTORIO</div>
+              <div style="font-size:30px;font-weight:900" id="ll-pac-pantalla">MAURO TUESTA</div>
+              <div style="font-size:12.5px;color:rgba(255,255,255,.7);margin-top:6px" id="ll-med-pantalla">CONSULTORIO 01 — DR. JULIO QUIROZ</div>
+            </div>
+            <div class="card" style="padding:14px">
+              <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:8px">Atención en Sala</div>
+              <p style="font-size:11px;color:var(--im);line-height:1.4">Al presionar "Llamar", el nombre del paciente parpadea en la pantalla principal de sala y se actualiza el estado a "En Consulta".</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA AUDIT LOG FORENSE -->
+      <div class="content" id="v-audit">
+        <div class="card">
+          <div class="card-hd">
+            <div><div class="card-tt">Auditoría del Sistema & Registro</div><div class="card-sub">Inmutable · Cumplimiento NTS 139-MINSA / Ley 29733</div></div>
+            <button class="btn btn-g btn-sm" onclick="showToast('Exportando log CSV...')">📥 Exportar Log CSV</button>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>Timestamp</th><th>Usuario</th><th>Rol</th><th>Módulo</th><th>Acción</th><th>Valor Anterior</th><th>Valor Nuevo / Evento</th><th>IP Origen</th></tr></thead>
+            <tbody id="tb-audit-log"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL REGISTRAR PACIENTE (DISEÑO FIEL) -->
+<div class="ov" id="ov-np">
+  <div class="modal wide">
+    <div class="mh">
+      <div>
+        <div class="mt">Registrar paciente</div>
+        <div class="msub">Todos los datos en una sola pantalla</div>
+      </div>
+      <button class="mc" onclick="closeModal('np')">×</button>
+    </div>
+    <div class="mb">
+      <div style="margin-bottom:12px;padding:9px 12px;background:var(--tl);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+        <div><span style="font-size:11px;color:var(--il)">N° Historia Clínica (Pre-asignada no editable):</span> <strong id="np-hc-preview" style="color:var(--td);font-size:13.5px;margin-left:6px">HC #000</strong></div>
+        <span class="badge badge-t">Provisional hasta 1ra Atención (NTS 139-MINSA)</span>
+      </div>
+
+      <div class="sec-lbl">IDENTIFICACIÓN</div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Tipo documento <span class="r">*</span></div><select id="np-td"><option>DNI</option><option>Carné extranjería</option><option>Pasaporte</option></select></div>
+        <div class="fg"><div class="fl">N° documento <span class="r">*</span></div><input type="text" id="np-d" placeholder="12345678" maxlength="12"></div>
+        <div class="fg"><div class="fl">Género <span class="r">*</span></div><select id="np-g"><option value="">Seleccione</option><option>Femenino</option><option>Masculino</option><option>Otro</option></select></div>
+      </div>
+
+      <div class="sec-lbl">NOMBRE COMPLETO</div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Nombre <span class="r">*</span></div><input type="text" id="np-n" placeholder="María"></div>
+        <div class="fg"><div class="fl">Apellido paterno <span class="r">*</span></div><input type="text" id="np-ap" placeholder="García"></div>
+        <div class="fg"><div class="fl">Apellido materno <span class="o">opc.</span></div><input type="text" id="np-am" placeholder="López"></div>
+      </div>
+
+      <div class="sec-lbl">CONTACTO</div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Celular principal <span class="r">*</span></div><input type="tel" id="np-c1" placeholder="987 654 321" maxlength="9"></div>
+        <div class="fg"><div class="fl">Celular alternativo <span class="o">opcional</span></div><input type="tel" id="np-c2" placeholder="987 654 322" maxlength="9"></div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Correo electrónico <span class="o">opcional</span></div><input type="email" id="np-mail" placeholder="correo@ejemplo.com"></div>
+        <div class="fg"><div class="fl">Dirección <span class="o">opcional</span></div><input type="text" id="np-dir" placeholder="Av. Principal 123, Lima"></div>
+      </div>
+
+      <div class="sec-lbl">INFORMACIÓN PERSONAL</div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Fecha de nacimiento <span class="r">*</span></div><input type="date" id="np-fn" value="1990-01-01"></div>
+        <div class="fg"><div class="fl">Estado civil</div><select id="np-ec"><option value="">Seleccione</option><option>Soltero/a</option><option>Casado/a</option><option>Viudo/a</option><option>Divorciado/a</option></select></div>
+        <div class="fg"><div class="fl">Ocupación</div><input type="text" id="np-ocp" placeholder="Ocupación"></div>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><div class="fl">Grado de instrucción</div><select id="np-gi"><option value="">Seleccione</option><option>Secundaria</option><option>Técnico</option><option>Universitario</option><option>Postgrado</option></select></div>
+
+      <div class="sec-lbl">CONTACTO DE EMERGENCIA</div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Familiar de contacto</div><input type="text" id="np-fam" placeholder="Nombre y relación (ej: María García - Hija)"></div>
+        <div class="fg"><div class="fl">Teléfono del familiar</div><input type="tel" id="np-fam-tel" placeholder="987 654 323"></div>
+      </div>
+
+      <div class="sec-lbl">CAPTACIÓN & ATRIBUCIÓN COMERCIAL</div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Canal de captación <span class="r">*</span></div><select id="np-canal"><option>CEO Salud</option><option>WhatsApp</option><option>Facebook Ads</option><option>Referido Médico</option><option>Presencial</option></select></div>
+        <div class="fg"><div class="fl">Medio de interacción</div><select id="np-medio"><option>WhatsApp</option><option>Llamada</option><option>Formulario Web</option></select></div>
+        <div class="fg"><div class="fl">Atribución Comercial <span class="r">*</span></div><select id="np-atrib"><option>Comercial 1</option><option>Comercial 2</option><option>Asist Admisión</option><option>Admisión</option></select></div>
+      </div>
+
+      <div class="sec-lbl">OBSERVACIONES CLÍNICAS <span class="o">opcional</span></div>
+      <textarea id="np-obs" placeholder="Alergias conocidas, antecedentes relevantes, indicaciones especiales para el equipo médico..."></textarea>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('np')">Cancelar</button>
+      <button class="btn btn-g" onclick="ejecutarGuardarPaciente(false)" style="color:var(--t);border-color:var(--tm)">Guardar sin agendar</button>
+      <button class="btn btn-p" onclick="ejecutarGuardarPaciente(true)">Guardar y agendar →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGENDAR NUEVA CITA -->
+<div class="ov" id="ov-nc">
+  <div class="modal wide">
+    <div class="mh"><div><div class="mt">Programar Cita</div><div class="msub">Tarifas actualizadas CEO Salud</div></div><button class="mc" onclick="closeModal('nc')">×</button></div>
+    <div class="mb">
+      <div class="fr c3">
+        <div class="fg"><div class="fl">DNI Paciente <span class="r">*</span></div><input type="text" id="nc-dni" placeholder="Ej: 01096024" oninput="buscarDniAgendamiento(this.value)"></div>
+        <div class="fg" style="grid-column:span 2"><div class="fl">Nombre Paciente / HC</div><input type="text" id="nc-nombre" readonly style="background:#F8FAFC;font-weight:700"></div>
+      </div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Especialidad</div><select id="nc-esp" onchange="updServiciosSelect()"><option value="trauma">Traumatología</option><option value="pd">Pie Diabético</option><option value="mfr">Medicina Física & Rehab</option></select></div>
+        <div class="fg"><div class="fl">Médico Asignado</div><select id="nc-med" onchange="updServiciosSelect()"><option value="Dr. Quiroz">Dr. Julio Quiroz</option><option value="Dra. Loarte">Dra. Keylin Loarte</option><option value="Dra. Jimena">Dra. Jimena Díaz</option></select></div>
+        <div class="fg"><div class="fl">Servicio / Tarifa</div><select id="nc-svc" onchange="updPrecioCita()"></select></div>
+      </div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Precio (S/)</div><input type="number" id="nc-precio" readonly style="font-weight:800;color:var(--t)"></div>
+        <div class="fg"><div class="fl">Fecha</div><input type="date" id="nc-fecha" value="2026-09-11"></div>
+        <div class="fg"><div class="fl">Hora Disponible</div><select id="nc-hora"><option>08:00</option><option>08:30</option><option>09:00</option><option>09:20</option><option>09:30</option><option>10:00</option><option>10:20</option><option>11:00</option><option>11:30</option><option>12:00</option></select></div>
+      </div>
+      <div class="fg"><div class="fl">Observaciones de la Cita</div><textarea id="nc-obs" placeholder="Motivo de consulta, derivación médica, antecedentes..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('nc')">Cancelar</button>
+      <button class="btn btn-p" onclick="guardarNuevaCita()">✓ Confirmar Agendamiento</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CITA COMPLETA -->
+<div class="ov" id="ov-edit-cita">
+  <div class="modal">
+    <div class="mh"><div><div class="mt">Modificar Cita</div><div class="msub" id="edc-sub">Detalle y observaciones</div></div><button class="mc" onclick="closeModal('edit-cita')">×</button></div>
+    <div class="mb">
+      <input type="hidden" id="edc-id">
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Médico</div><select id="edc-med"><option value="Dr. Quiroz">Dr. Julio Quiroz</option><option value="Dra. Loarte">Dra. Keylin Loarte</option><option value="Dra. Jimena">Dra. Jimena Díaz</option></select></div>
+        <div class="fg"><div class="fl">Estado</div><select id="edc-estado"><option value="espera">En Espera</option><option value="llego">Llegó a Recepción</option><option value="en_consulta">En Consulta</option><option value="atendido">Atendido</option><option value="reprogramado">Reprogramado</option></select></div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Fecha</div><input type="date" id="edc-fecha"></div>
+        <div class="fg"><div class="fl">Hora</div><select id="edc-hora"><option>08:00</option><option>08:30</option><option>09:00</option><option>09:20</option><option>09:30</option><option>10:00</option><option>10:20</option><option>11:00</option><option>12:00</option></select></div>
+      </div>
+      <div class="fg"><div class="fl">Observaciones / Indicaciones Especiales</div><textarea id="edc-obs" placeholder="Actualizar notas clínicas o de recepción..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('edit-cita')">Cancelar</button>
+      <button class="btn btn-p" onclick="guardarEdicionCita()">✓ Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ALERTA DNI -->
+<div class="ov" id="ov-alerta-dni">
+  <div class="modal narrow">
+    <div class="mh" style="border-bottom:none;padding-bottom:0">
+      <div class="mt" style="color:var(--accent)">⚠️ Paciente no Encontrado</div>
+      <button class="mc" onclick="closeModal('alerta-dni')">×</button>
+    </div>
+    <div class="mb">
+      <p style="font-size:12.5px;color:var(--im);line-height:1.5">El documento ingresado (<strong id="alerta-dni-num">--</strong>) no figura en el padrón de pacientes de CEO Salud.</p>
+      <div style="margin-top:12px;padding:10px;background:var(--accent-light);border-radius:8px;font-size:11.5px;color:var(--accent-dark)">¿Deseas registrar su filiación y pre-asignar su Historia Clínica en este momento sin perder el avance?</div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('alerta-dni')">Volver</button>
+      <button class="btn btn-accent" onclick="procederCreacionDesdeAlerta()">+ Registrar Paciente</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPRESIÓN COMPROBANTE -->
+<div class="ov" id="ov-print-comp">
+  <div class="modal narrow">
+    <div class="mh"><div><div class="mt">Comprobante Fiscal Emitido</div></div><button class="mc" onclick="closeModal('print-comp')">×</button></div>
+    <div class="mb"><div class="receipt-print" id="receipt-print-content"></div></div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal('print-comp')">Cerrar</button>
+      <button class="btn btn-p" onclick="window.print()">🖨️ Mandar a Impresión</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== INICIALIZACIÓN GLOBAL ====================
+window.addEventListener('DOMContentLoaded', () => {
+  renderCal();
+  renderPacientes();
+  renderAudit();
+  renderCRM();
+  renderCaja();
+  renderAdmisionDia();
+  renderHorariosView();
+  renderMediosPagoCheckboxes();
+  renderPacientesConsultaList();
+  renderLlamador();
+  renderHistorialComprobantes();
+  updServiciosSelect();
+});
+
+function showV(id) {
+  document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+  var el = document.getElementById('v-' + id);
+  if (el) el.classList.add('active');
+
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('on'));
+  var ni = document.getElementById('ni-' + id);
+  if (ni) ni.classList.add('on');
+
+  var titles = {
+    cit: 'Citas',
+    pac: 'Pacientes',
+    horarios: 'Horarios Médicos & Disponibilidad',
+    ventas: 'Ventas',
+    caja: 'Caja & Arqueos',
+    crm: 'CRM',
+    audit: 'Audit Log',
+    admit: 'Admisión',
+    consulta: 'Historia Clínica',
+    llamador: 'Llamador de Sala'
+  };
+  document.getElementById('tb-ttl').textContent = titles[id] || 'CEO Medic';
+}
+
+function cambiarSesionUsuario(val) {
+  usuarioSesion = val;
+  var av = val === 'Dr. Quiroz' ? 'DQ' : val === 'Dra. Loarte' ? 'KL' : 'JD';
+  document.getElementById('user-badge-av').textContent = av;
+  document.getElementById('user-badge-name').textContent = val;
+  showToast(`Sesión activa: ${val}`);
+  renderPacientesConsultaList();
+  if (pacHceSeleccionado) evaluarAccesoHCE(pacHceSeleccionado);
+}
+
+// ==================== FUNCIONES VENTAS ====================
+function evaluarDetraccionYCampos() {
+  var tipo = document.getElementById('vta-tipo-comp').value;
+  document.getElementById('wrap-detraccion').style.display = tipo === 'Factura' ? 'flex' : 'none';
+  document.getElementById('vta-folio').value = (tipo === 'Factura' ? 'F001-' : tipo === 'Boleta' ? 'B001-' : 'NC01-') + '000145';
+  calcularTotalesVenta();
+}
+
+function togglePagadorTercero(activo) {
+  document.getElementById('box-pagador-tercero').style.display = activo ? 'block' : 'none';
+}
+
+function buscarPacienteEnVenta(dni) {
+  var pac = PATIENTS.find(p => p.d === dni.trim());
+  if (pac) {
+    pacVentaSeleccionado = pac;
+    document.getElementById('vta-pac-nom-lbl').textContent = `✓ ${pac.n} ${pac.ap}`;
+    document.getElementById('vta-pac-hc').value = `HC #${pac.hc}`;
+  } else {
+    pacVentaSeleccionado = null;
+    document.getElementById('vta-pac-nom-lbl').textContent = '';
+    document.getElementById('vta-pac-hc').value = '';
+  }
+}
+
+function manejarSeleccionCatalogo(key) {
+  if (!key) return;
+  var it = CATALOGO_COMPLETO[key];
+  document.getElementById('vta-almacen').value = it.almacen;
+  document.getElementById('wrap-profesional').style.display = it.esServicio ? 'flex' : 'none';
+}
+
+function agregarItemALaVenta() {
+  var key = document.getElementById('vta-item-sel').value;
+  if (!key) return;
+  var it = CATALOGO_COMPLETO[key];
+  itemsVentaActual.push({
+    id: key,
+    desc: it.desc,
+    almacen: it.almacen,
+    prof: it.esServicio ? document.getElementById('vta-prof-asist').value : 'N/A',
+    precio: it.precio,
+    cant: 1
+  });
+  renderTablaItemsVenta();
+}
+
+function renderTablaItemsVenta() {
+  var tb = document.getElementById('vta-tabla-items');
+  if (!itemsVentaActual.length) {
+    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--ph);padding:10px">Sin ítems seleccionados</td></tr>`;
+    calcularTotalesVenta();
+    return;
+  }
+  tb.innerHTML = itemsVentaActual.map((it, i) => `
+    <tr>
+      <td><strong>${it.desc}</strong></td>
+      <td>${it.almacen}</td>
+      <td>${it.prof}</td>
+      <td>S/ ${it.precio}</td>
+      <td style="font-weight:700">S/ ${it.precio * it.cant}</td>
+      <td><button onclick="itemsVentaActual.splice(${i},1);renderTablaItemsVenta()" style="color:var(--r);background:none;border:none;cursor:pointer">×</button></td>
+    </tr>
+  `).join('');
+  calcularTotalesVenta();
+}
+
+function renderMediosPagoCheckboxes() {
+  var cont = document.getElementById('medios-pago-checkboxes');
+  cont.innerHTML = MEDIOS_PAGO_LISTA.map((m, idx) => `
+    <label style="display:flex;align-items:center;gap:4px;font-size:10.5px">
+      <input type="checkbox" id="mp-${idx}" value="${m}" onchange="renderInputsMediosPagoDinamicos()" style="width:auto;height:auto"> ${m}
+    </label>
+  `).join('');
+}
+
+function renderInputsMediosPagoDinamicos() {
+  var cont = document.getElementById('medios-pago-inputs-dinamicos');
+  var seleccionados = [];
+  MEDIOS_PAGO_LISTA.forEach((m, idx) => {
+    var chk = document.getElementById(`mp-${idx}`);
+    if (chk && chk.checked) seleccionados.push(m);
+  });
+  cont.innerHTML = seleccionados.map(m => `
+    <div style="padding:6px;background:#F8FAFC;border:1px solid var(--rule);border-radius:4px;display:grid;grid-template-columns:120px 80px 1fr;gap:6px;align-items:center">
+      <strong style="font-size:10.5px">${m}</strong>
+      <input type="number" placeholder="Monto S/" style="height:26px" oninput="calcularTotalesVenta()">
+      <input type="text" placeholder="N° Operación individual" style="height:26px">
+    </div>
+  `).join('');
+}
+
+function cambiarTipoDescuento() {
+  document.getElementById('vta-desc-val').value = 0;
+  evaluarClaveDescuento();
+}
+
+function evaluarClaveDescuento() {
+  var tipo = document.querySelector('input[name="rd-desc"]:checked').value;
+  var val = parseFloat(document.getElementById('vta-desc-val').value) || 0;
+  var passInp = document.getElementById('vta-desc-pass');
+  var msg = document.getElementById('vta-desc-msg');
+  var requiere = (tipo === 'pct' && val > 10) || (tipo === 'imp' && val > 50);
+  passInp.style.display = requiere ? 'inline-block' : 'none';
+  msg.textContent = requiere ? 'Descuento elevado: Requiere clave gerencial (CEO2026)' : '';
+  calcularTotalesVenta();
+}
+
+function calcularTotalesVenta() {
+  var subtotal = itemsVentaActual.reduce((acc, it) => acc + (it.precio * it.cant), 0);
+  var tipoDesc = document.querySelector('input[name="rd-desc"]:checked') ? document.querySelector('input[name="rd-desc"]:checked').value : 'pct';
+  var valDesc = parseFloat(document.getElementById('vta-desc-val').value) || 0;
+  var montoDesc = tipoDesc === 'pct' ? subtotal * (valDesc / 100) : valDesc;
+  var total = Math.max(0, subtotal - montoDesc);
+
+  var chkDetr = document.getElementById('chk-detraccion');
+  var detraccion = 0;
+  if (chkDetr && chkDetr.checked) {
+    detraccion = total * 0.12;
+    document.getElementById('lbl-detraccion-row').style.display = 'block';
+    document.getElementById('lbl-vta-detraccion').textContent = `S/ ${detraccion.toFixed(2)}`;
+  } else {
+    document.getElementById('lbl-detraccion-row').style.display = 'none';
+  }
+
+  document.getElementById('lbl-vta-subtotal').textContent = `S/ ${subtotal.toFixed(2)}`;
+  document.getElementById('lbl-vta-desc').textContent = `- S/ ${montoDesc.toFixed(2)}`;
+  document.getElementById('lbl-vta-total').textContent = `S/ ${total.toFixed(2)}`;
+}
+
+function emitirComprobanteVenta() {
+  if (!itemsVentaActual.length) { showToast('Agrega ítems al comprobante.'); return; }
+  var folio = document.getElementById('vta-folio').value;
+  var total = parseFloat(document.getElementById('lbl-vta-total').textContent.replace('S/ ','')) || 0;
+  COMPROBANTES_EMITIDOS.unshift({
+    folio,
+    tipo: document.getElementById('vta-tipo-comp').value,
+    fecha: '11/09/2026 11:40',
+    pac: pacVentaSeleccionado ? `${pacVentaSeleccionado.n} ${pacVentaSeleccionado.ap}` : 'Cliente General',
+    dni: pacVentaSeleccionado ? pacVentaSeleccionado.d : '00000000',
+    pagador: document.getElementById('chk-tercero-paga').checked ? document.getElementById('vta-pag-razon').value : 'Mismo paciente',
+    total,
+    items: [...itemsVentaActual],
+    obs: document.getElementById('vta-obs-comp').value,
+    obsDesg: document.getElementById('vta-obs-desglosable').value
+  });
+  renderHistorialComprobantes();
+  itemsVentaActual = [];
+  renderTablaItemsVenta();
+  showToast(`Comprobante ${folio} emitido con éxito`);
+}
+
+function renderHistorialComprobantes() {
+  var hist = document.getElementById('vta-historial-list');
+  hist.innerHTML = COMPROBANTES_EMITIDOS.map((c, idx) => `
+    <div onclick="verComprobanteImpresion(${idx})" style="padding:8px;border-bottom:1px solid var(--rule2);cursor:pointer;border-radius:4px" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
+      <div style="display:flex;justify-content:space-between">
+        <strong>${c.folio}</strong>
+        <span style="font-weight:800;color:var(--t)">S/ ${c.total.toFixed(2)}</span>
+      </div>
+      <div style="font-size:10.5px;color:var(--il)">${c.tipo} · ${c.pac}</div>
+    </div>
+  `).join('');
+}
+
+function verComprobanteImpresion(idx) {
+  var c = COMPROBANTES_EMITIDOS[idx];
+  document.getElementById('receipt-print-content').innerHTML = `
+    <div style="text-align:center;margin-bottom:12px">
+      <div style="font-weight:900">CEO SALUD S.A.C.</div>
+      <div style="font-size:10px">RUC: 20608934521 · Magdalena del Mar</div>
+      <div style="font-weight:800;margin-top:6px">${c.tipo.toUpperCase()} ${c.folio}</div>
+    </div>
+    <div style="font-size:10.5px;border-bottom:1px dashed #94a3b8;padding-bottom:6px;margin-bottom:6px">
+      <div>Fecha: ${c.fecha}</div>
+      <div>Paciente: ${c.pac} (DNI: ${c.dni})</div>
+      <div>Pagador: ${c.pagador}</div>
+    </div>
+    <div style="font-size:10.5px;border-bottom:1px dashed #94a3b8;padding-bottom:6px;margin-bottom:6px">
+      ${c.items.map(it => `
+        <div style="display:flex;justify-content:space-between">
+          <span>${it.cant}x ${it.desc}</span>
+          <span>S/ ${(it.precio * it.cant).toFixed(2)}</span>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;font-weight:900">
+      <span>TOTAL NETO:</span>
+      <span>S/ ${c.total.toFixed(2)}</span>
+    </div>
+    ${c.obs ? `<div style="font-size:9.5px;margin-top:6px"><strong>Obs:</strong> ${c.obs}</div>` : ''}
+    ${c.obsDesg ? `<div style="font-size:9px;color:#0284c7"><strong>Anexo:</strong> ${c.obsDesg}</div>` : ''}
+  `;
+  openModal('print-comp');
+}
+
+// ==================== HISTORIA CLÍNICA (HCE) ====================
+function renderPacientesConsultaList() {
+  var c = document.getElementById('consulta-pacientes-list');
+  c.innerHTML = PATIENTS.map(p => `
+    <div onclick="seleccionarPacienteHCE(${p.hc})" style="padding:8px 10px;border-radius:6px;margin-bottom:6px;cursor:pointer;border:1px solid var(--rule);background:#fff">
+      <div style="font-weight:700;font-size:12px">${p.n} ${p.ap}</div>
+      <div style="font-size:10.5px;color:var(--il)">HC #${p.hc} · DNI ${p.d}</div>
+    </div>
+  `).join('');
+}
+
+function buscarPacienteNoCitadoHCE() {
+  var dni = document.getElementById('hce-search-dni').value.trim();
+  var pac = PATIENTS.find(p => p.d === dni);
+  if (!pac) { showToast('Paciente no encontrado'); return; }
+  seleccionarPacienteHCE(pac.hc);
+}
+
+function seleccionarPacienteHCE(hc) {
+  var pac = PATIENTS.find(p => p.hc === hc);
+  if (!pac) return;
+  pacHceSeleccionado = pac;
+  document.getElementById('hce-cuerpo').style.display = 'block';
+  document.getElementById('hce-pac-titulo').textContent = `${pac.n} ${pac.ap} — HC #${pac.hc}`;
+  document.getElementById('hce-pac-sub').textContent = `DNI: ${pac.d} · Estado: ${pac.estadoHC}`;
+  document.getElementById('hce-med-nombre').value = usuarioSesion;
+  renderOrdenesHCE(pac.hc);
+  cargarMedioLocal('rx');
+}
+
+function setHceTab(tab) {
+  ['atenc', 'multimedia', 'ordenes'].forEach(t => {
+    document.getElementById(`hce-sub-${t}`).style.display = t === tab ? 'block' : 'none';
+    document.getElementById(`hce-tab-${t}`).classList.toggle('on', t === tab);
+  });
+}
+
+function cargarMedioLocal(tipo) {
+  var cont = document.getElementById('media-inner-content');
+  if (tipo === 'rx') cont.innerHTML = `<div>🩻</div><div style="font-weight:700;margin-top:6px">RX Columna Lumbosacra.dcm</div>`;
+  else if (tipo === 'eco') cont.innerHTML = `<div>📡</div><div style="font-weight:700;margin-top:6px">Ecografía Tendinosa.jpg</div>`;
+  else cont.innerHTML = `<div>📄</div><div style="font-weight:700;margin-top:6px">Informe Post-Operatorio.pdf</div>`;
+}
+
+function subirArchivoLocal(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  showToast(`Subiendo ${file.name}...`);
+  setTimeout(() => {
+    document.getElementById('media-inner-content').innerHTML = `<div>📎</div><div>${file.name} (Subido)</div>`;
+    showToast('Archivo guardado en la Historia Clínica');
+  }, 800);
+}
+
+function renderOrdenesHCE(hc) {
+  var tb = document.getElementById('hce-ordenes-cronologia-body');
+  var ords = ORDENES_HCE.filter(o => o.hc === hc);
+  if (!ords.length) {
+    tb.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:12px;color:var(--ph)">Sin órdenes registradas</td></tr>`;
+    return;
+  }
+  tb.innerHTML = ords.map(o => `
+    <tr>
+      <td>${o.fecha}</td>
+      <td>Prescripción</td>
+      <td>${o.orden}</td>
+      <td><span class="badge badge-o">Pendiente Pago</span></td>
+      <td><button class="btn btn-g btn-xs" onclick="showToast('Imprimiendo orden médica...')">Imprimir</button></td>
+    </tr>
+  `).join('');
+}
+
+function firmarDigitalmenteHCE() {
+  if (!pacHceSeleccionado) return;
+  pacHceSeleccionado.estadoHC = 'Confirmada';
+  showToast('Historia Clínica firmada y bloqueada digitalmente');
+  seleccionarPacienteHCE(pacHceSeleccionado.hc);
+}
+
+// ==================== PACIENTES & MODALES ====================
+function openModalNuevoPaciente() {
+  var nextHC = Math.max(...PATIENTS.map(p => p.hc)) + 1;
+  document.getElementById('np-hc-preview').textContent = `HC #${nextHC}`;
+  openModal('np');
+}
+
+function ejecutarGuardarPaciente(agendarLuego) {
+  var d = document.getElementById('np-d').value.trim();
+  var n = document.getElementById('np-n').value.trim();
+  var ap = document.getElementById('np-ap').value.trim();
+  var c1 = document.getElementById('np-c1').value.trim();
+  var atrib = document.getElementById('np-atrib').value;
+
+  if (!d || !n || !ap || !c1) { showToast('Completa los campos obligatorios (*)'); return; }
+
+  var nextHC = Math.max(...PATIENTS.map(p => p.hc)) + 1;
+  PATIENTS.push({
+    hc: nextHC, estadoHC: 'Provisional', n, ap, am: '', d, c1, c2: '', fn: '1990-01-01', atrib
+  });
+
+  closeModal('np');
+  renderPacientes();
+  renderAdmisionDia();
+  showToast(`Paciente registrado con HC #${nextHC}`);
+
+  if (agendarLuego) {
+    openModalNuevaCita();
+    document.getElementById('nc-dni').value = d;
+    document.getElementById('nc-nombre').value = `${n} ${ap} (HC #${nextHC} - Provisional)`;
+  }
+}
+
+function renderPacientes(filtro = '') {
+  var tb = document.getElementById('tb-pacientes');
+  var data = filtro ? PATIENTS.filter(p => p.d.includes(filtro) || (p.n + ' ' + p.ap).toLowerCase().includes(filtro.toLowerCase())) : PATIENTS;
+  tb.innerHTML = data.map(p => `
+    <tr>
+      <td><strong>#${p.hc}</strong></td>
+      <td><span class="badge ${p.estadoHC==='Confirmada'?'badge-g':'badge-o'}">${p.estadoHC}</span></td>
+      <td style="font-weight:700">${p.n} ${p.ap}</td>
+      <td>${p.d}</td>
+      <td>${p.c1}</td>
+      <td>${p.c2 || '-'}</td>
+      <td><span class="badge badge-t">${p.atrib}</span></td>
+      <td><button class="btn btn-g btn-xs" onclick="openModalNuevaCita();document.getElementById('nc-dni').value='${p.d}';buscarDniAgendamiento('${p.d}')">Agendar</button></td>
+    </tr>
+  `).join('');
+}
+function filterPacientes(v) { renderPacientes(v); }
+
+function openModalNuevaCita() { openModal('nc'); }
+function guardarNuevaCita() {
+  var dni = document.getElementById('nc-dni').value.trim();
+  var pac = PATIENTS.find(p => p.d === dni);
+  if (!pac) { showToast('Paciente no registrado'); return; }
+  var tarifa = TARIFAS_EXACTAS[document.getElementById('nc-svc').value];
+  EVTS.push({
+    id: Date.now(),
+    pac: `${pac.n} ${pac.ap}`,
+    dni: pac.d,
+    svc: tarifa.nombre,
+    precio: tarifa.precio,
+    esp: tarifa.esp,
+    med: document.getElementById('nc-med').value,
+    fecha: document.getElementById('nc-fecha').value,
+    hora: document.getElementById('nc-hora').value,
+    estado: 'espera',
+    obs: document.getElementById('nc-obs').value,
+    pagado: false
+  });
+  closeModal('nc');
+  renderCal();
+  renderAdmisionDia();
+  renderLlamador();
+  showToast('Cita confirmada');
+}
+
+function abrirAgendamientoDirecto(fecha, hora) {
+  openModalNuevaCita();
+  document.getElementById('nc-fecha').value = fecha;
+  document.getElementById('nc-hora').value = hora;
+}
+
+function buscarDniAgendamiento(dni) {
+  var pac = PATIENTS.find(p => p.d === dni.trim());
+  if (pac) document.getElementById('nc-nombre').value = `${pac.n} ${pac.ap} (HC #${pac.hc})`;
+  else document.getElementById('nc-nombre').value = '';
+}
+
+function procederCreacionDesdeAlerta() {
+  closeModal('alerta-dni');
+  openModalNuevoPaciente();
+}
+
+function updServiciosSelect() {
+  var esp = document.getElementById('nc-esp').value;
+  var s = document.getElementById('nc-svc');
+  s.innerHTML = '';
+  if (esp === 'trauma') {
+    s.innerHTML += `<option value="quiroz_reeval">Reevaluación Dr. Quiroz - S/ 120</option>`;
+    s.innerHTML += `<option value="quiroz_referido">Reevaluación referido Dr. Quiroz - S/ 220</option>`;
+    s.innerHTML += `<option value="ceo_trauma">Reevaluación CEO Salud Traumatología - S/ 80</option>`;
+  } else if (esp === 'pd') {
+    s.innerHTML += `<option value="ceo_pd">Reevaluación CEO Salud Pie Diabético - S/ 120</option>`;
+  } else {
+    s.innerHTML += `<option value="mfr_sesion">Sesión Medicina Física - S/ 100</option>`;
+    s.innerHTML += `<option value="mfr_pack12">Paquete Terapia Física 12 Sesiones - S/ 650</option>`;
+  }
+  updPrecioCita();
+}
+function updPrecioCita() {
+  var tarifa = TARIFAS_EXACTAS[document.getElementById('nc-svc').value];
+  if (tarifa) document.getElementById('nc-precio').value = tarifa.precio;
+}
+
+// ==================== AUDITORÍA ====================
+function renderAudit() {
+  document.getElementById('tb-audit-log').innerHTML = AUDIT_LOG.map(a => `
+    <tr>
+      <td style="font-family:monospace;font-size:10px">${a.ts}</td>
+      <td style="font-weight:700">${a.user}</td>
+      <td><span class="badge badge-t">${a.rol}</span></td>
+      <td>${a.mod}</td>
+      <td>${a.acc}</td>
+      <td style="font-size:10.5px">${a.ant}</td>
+      <td style="font-size:10.5px;color:var(--gd);font-weight:600">${a.nuevo}</td>
+      <td style="font-family:monospace;font-size:10px">${a.ip}</td>
+    </tr>
+  `).join('');
+}
+
+// ==================== MODALES & TOAST ====================
+function openModal(id) { document.getElementById('ov-' + id).classList.add('open'); }
+function closeModal(id) { document.getElementById('ov-' + id).classList.remove('open'); }
+
+function showToast(m) {
+  var t = document.getElementById('toast');
+  t.textContent = m;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
